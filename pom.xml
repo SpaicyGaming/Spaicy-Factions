@@ -37,9 +37,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.2</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>com.google.errorprone</exclude>
+                            <exclude>com.google.j2objc</exclude>
+                            <exclude>com.google.thirdparty.publicsuffix</exclude>
+                        </excludes>
+                    </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>net.dv8tion</pattern>
@@ -52,6 +59,10 @@
                         <relocation>
                             <pattern>com.google.gson</pattern>
                             <shadedPattern>com.massivecraft.factions.shade.com.google.gson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.common</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.com.google.common</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.darkblade12</pattern>
@@ -334,7 +345,7 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.0-jre</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>jsr305</artifactId>
@@ -419,10 +430,10 @@
             <id>net.coreprotect</id>
             <url>http://maven.playpro.com/</url>
         </repository>
-            <repository>
-                <id>codemc-repo</id>
-                <url>https://repo.codemc.org/repository/maven-public/</url>
-            </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
         <repository>
             <id>ess-repo</id>
             <url>http://ci.ender.zone/plugin/repository/everything/</url>
