@@ -93,7 +93,9 @@ public enum UpgradeType {
     private ItemStack enchant(ItemStack item) {
         ItemMeta itemMeta = item.getItemMeta();
         if (itemMeta != null) {
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            if (!FactionsPlugin.getInstance().mc17)
+                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
             itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
             item.setItemMeta(itemMeta);
         }

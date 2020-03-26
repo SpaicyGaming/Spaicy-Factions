@@ -56,9 +56,11 @@ public class ShopGUIFrame {
             ItemStack item = new ItemStack(material);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(FactionsPlugin.instance.color(name));
-            meta.addItemFlags();
+            if (!FactionsPlugin.getInstance().mc17)
+                meta.addItemFlags();
             if (glowing) {
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                if (!FactionsPlugin.getInstance().mc17)
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 meta.addEnchant(Enchantment.DURABILITY, 1, true);
             }
             if (!glowing) meta.removeEnchant(Enchantment.DURABILITY);

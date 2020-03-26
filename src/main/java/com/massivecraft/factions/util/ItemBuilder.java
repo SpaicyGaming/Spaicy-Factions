@@ -74,11 +74,15 @@ public class ItemBuilder {
     }
 
     public ItemBuilder glowing(boolean status) {
+        boolean addFlags = !FactionsPlugin.getInstance().mc17;
+
         if (status) {
-            this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            if (addFlags)
+                this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             this.meta.addEnchant(Enchantment.DURABILITY, 1, true);
         } else {
-            this.meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+            if (addFlags)
+                this.meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
             this.meta.removeEnchant(Enchantment.DURABILITY);
         }
         return this;

@@ -123,7 +123,9 @@ public class MissionGUI implements FactionGUI {
                 if (fPlayer.getFaction().getMissions().containsKey(key)) {
                     Mission mission = fPlayer.getFaction().getMissions().get(key);
                     itemMeta.addEnchant(Enchantment.SILK_TOUCH, 1, true);
-                    itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    if (!FactionsPlugin.getInstance().mc17) {
+                        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    }
                     loreLines.add("");
                     loreLines.add(plugin.color(plugin.getConfig().getString("Mission-Progress-Format")
                             .replace("{progress}", String.valueOf(mission.getProgress()))
