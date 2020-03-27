@@ -86,6 +86,9 @@ public enum UpgradeType {
     private ItemStack updateLevelStatus(ItemStack item, int level) {
         if (level >= 1) {
             item.setAmount(level);
+            if (!FactionsPlugin.getInstance().mc17) {
+                enchant(item);
+            }
         }
         return item;
     }

@@ -8,9 +8,9 @@ public enum Access {
      * @author Illyria Team
      */
 
-    ALLOW("Allow"),
-    DENY("Deny"),
-    UNDEFINED("Undefined");
+    ALLOW("Permesso"),
+    DENY("Vietato"),
+    UNDEFINED("Indefinito");
 
     private final String name;
 
