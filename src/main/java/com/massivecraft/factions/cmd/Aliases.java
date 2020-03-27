@@ -148,6 +148,7 @@ public class Aliases {
     public static ArrayList<String> upgrades = new ArrayList<>(Arrays.asList("upgrades", "upgrade"));
     public static ArrayList<String> vault = new ArrayList<>(Collections.singletonList("vault"));
     public static ArrayList<String> viewChest = new ArrayList<>(Arrays.asList("viewchest", "viewpv"));
+    public static ArrayList<String> mission = new ArrayList<>(Arrays.asList("mission", "missions", "objective", "objectives"));
     private static transient Aliases i = new Aliases();
 
     public static void load() {
