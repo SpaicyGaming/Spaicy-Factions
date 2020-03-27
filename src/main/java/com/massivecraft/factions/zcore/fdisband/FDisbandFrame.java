@@ -28,7 +28,7 @@ public class FDisbandFrame {
     private Gui gui;
 
     public FDisbandFrame(Faction faction) {
-        this.gui = new Gui(FactionsPlugin.getInstance(), 1, "Confira Scioglimento");
+        this.gui = new Gui(FactionsPlugin.getInstance(), 1, "Conferma Scioglimento");
     }
 
     public void buildGUI(FPlayer fPlayer) {
