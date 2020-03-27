@@ -83,6 +83,7 @@ public class ShopGUIFrame {
                     buildGUI(fme);
                 } else {
                     fplayer.msg(TL.SHOP_NOT_ENOUGH_POINTS);
+                    fplayer.getPlayer().closeInventory();
                 }
             }));
             pane.populateWithGuiItems(GUIItems);

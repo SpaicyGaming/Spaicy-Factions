@@ -62,24 +62,28 @@ public class MissionGUI implements FactionGUI {
         }
         if (configurationSection == null) return;
 
+        if (fPlayer.getFaction().getMissions().containsKey(missionName)) {
+            fPlayer.msg(TL.MISSION_MISSION_ACTIVE);
+            fPlayer.getPlayer().closeInventory();
+            return;
+        }
+
         int max = plugin.getConfig().getInt("MaximumMissionsAllowedAtOnce");
         if (fPlayer.getFaction().getMissions().size() >= max) {
             fPlayer.msg(TL.MISSION_MISSION_MAX_ALLOWED, max);
+            fPlayer.getPlayer().closeInventory();
             return;
         }
         if (missionName.equals(plugin.color(FactionsPlugin.getInstance().getConfig().getString("Randomization.Start-Item.Disallowed.Name"))))
             return;
 
-        if (fPlayer.getFaction().getMissions().containsKey(missionName)) {
-            fPlayer.msg(TL.MISSION_MISSION_ACTIVE);
-            return;
-        }
         ConfigurationSection section = configurationSection.getConfigurationSection(missionName);
         if (section == null) return;
 
         if (FactionsPlugin.getInstance().getConfig().getBoolean("DenyMissionsMoreThenOnce")) {
             if (fPlayer.getFaction().getCompletedMissions().contains(missionName)) {
                 fPlayer.msg(TL.MISSION_ALREAD_COMPLETED);
+                fPlayer.getPlayer().closeInventory();
                 return;
             }
         }
@@ -122,7 +126,7 @@ public class MissionGUI implements FactionGUI {
                 }
                 if (fPlayer.getFaction().getMissions().containsKey(key)) {
                     Mission mission = fPlayer.getFaction().getMissions().get(key);
-                    itemMeta.addEnchant(Enchantment.SILK_TOUCH, 1, true);
+                    itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
                     if (!FactionsPlugin.getInstance().mc17) {
                         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     }
