@@ -1,6 +1,7 @@
 package com.massivecraft.factions.missions;
 
 import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.cmd.Aliases;
 import com.massivecraft.factions.cmd.CommandContext;
 import com.massivecraft.factions.cmd.CommandRequirements;
 import com.massivecraft.factions.cmd.FCommand;
@@ -14,10 +15,7 @@ public class CmdMissions extends FCommand {
      */
 
     public CmdMissions() {
-        this.aliases.add("missions");
-        this.aliases.add("mission");
-        this.aliases.add("objectives");
-        this.aliases.add("objective");
+        this.aliases.addAll(Aliases.mission);
 
         this.requirements = new CommandRequirements.Builder(Permission.MISSIONS)
                 .memberOnly()
