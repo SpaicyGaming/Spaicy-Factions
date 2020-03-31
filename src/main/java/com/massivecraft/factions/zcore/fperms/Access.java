@@ -8,9 +8,9 @@ public enum Access {
      * @author Illyria Team
      */
 
-    ALLOW("Permesso"),
-    DENY("Vietato"),
-    UNDEFINED("Indefinito");
+    ALLOW("Allow"),
+    DENY("Deny"),
+    UNDEFINED("Undefined");
 
     private final String name;
 
@@ -45,7 +45,7 @@ public enum Access {
         return name();
     }
 
-    public String getColor() {
-        return FactionsPlugin.getInstance().getConfig().getString("fperm-gui.action.Access-Colors." + this.name);
+    public String getDisplayName() {
+        return FactionsPlugin.getInstance().getConfig().getString("fperm-gui.action.Access-Display-Names." + this.name);
     }
 }
