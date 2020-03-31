@@ -1601,7 +1601,7 @@ public enum XMaterial {
      * @since 2.1.0
      */
     @Nonnull
-    private static String toWord(@Nonnull String name) {
+    public static String toWord(@Nonnull String name) {
         return WordUtils.capitalize(name.replace('_', ' ').toLowerCase(Locale.ENGLISH));
     }
 
