@@ -18,10 +18,7 @@ import com.massivecraft.factions.struct.ChatMode;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
-import com.massivecraft.factions.util.CC;
-import com.massivecraft.factions.util.FactionGUI;
-import com.massivecraft.factions.util.VisualizeUtil;
-import com.massivecraft.factions.util.XMaterial;
+import com.massivecraft.factions.util.*;
 import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.persist.MemoryFPlayer;
@@ -618,11 +615,21 @@ public class FactionsPlayerListener implements Listener {
             String rowFormat = TL.COMMAND_INSPECT_ROW.toString();
             for (String[] strings : info) {
                 CoreProtectAPI.ParseResult row = coAPI.parseResult(strings);
+
+                String blockType;
+                if (FactionsPlugin.instance.mc17) {
+                    Material material = MaterialUtil.getMaterialById(row.getTypeId());
+                    blockType = XMaterial.toWord(material.name());
+                } else {
+                    // this method doesn't exist in pre-1.8 CoreProtect api
+                    blockType = row.getType().toString().toLowerCase();
+                }
+
                 player.sendMessage(rowFormat
                         .replace("{time}", convertTime(row.getTime()))
                         .replace("{action}", row.getActionString())
                         .replace("{player}", row.getPlayer())
-                        .replace("{block-type}", row.getType().toString().toLowerCase()));
+                        .replace("{block-type}", blockType));
             }
         }
     }
