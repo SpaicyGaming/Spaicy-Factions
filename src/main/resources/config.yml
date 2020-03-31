@@ -463,10 +463,10 @@ fperm-gui:
   action:
     name: 'Faction Permissions'
     rows: 6
-    Access-Colors:
-      Allow: '&a'
-      Deny: '&c'
-      Undefined: '&7'
+    Access-Display-Names:
+      Allow: '&aAllowed'
+      Deny: '&cDenied'
+      Undefined: '&7Undefined'
     Materials:
       build: COBBLESTONE
       destroy: DIAMOND_PICKAXE
@@ -539,7 +539,7 @@ fperm-gui:
       name: '&c&lPermission to {action}'
       lore:
         - ''
-        - '&4&l* &cStatus: &f{action-access-color}{action-access}'
+        - '&4&l* &cStatus: {action-access}'
         - ''
         - '&2&l* &aLeft click to &a&lAllow&a.'
         - '&4&l* &cRight click to &c&lDeny&c.'
