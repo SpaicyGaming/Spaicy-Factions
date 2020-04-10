@@ -285,6 +285,10 @@ public class FactionsPlugin extends MPlugin {
 
         getServer().getPluginManager().registerEvents(factionsPlayerListener = new FactionsPlayerListener(), this);
 
+        if (!mc17) {
+            getServer().getPluginManager().registerEvents(new BannersListener(), this);
+        }
+
         // Register Event Handlers
         eventsListener = new Listener[]{
                 new FactionsChatListener(),
