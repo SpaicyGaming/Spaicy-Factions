@@ -634,6 +634,8 @@ See-Invisible-Faction-Members: false #ONLY WHEN SCOREBOARD IS ENABLED
 #This option is the ability to see other faction members inventories
 f-inventory-see:
   Enabled: true
+
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                Faction Alt Accounts                  | #
@@ -745,6 +747,15 @@ fcooldowns:
 Falling-Block-Fix:
   enabled: true
 
+
+############################################################
+# +------------------------------------------------------+ #
+# |              Faction Inspect                         | #
+# +------------------------------------------------------+ #
+############################################################
+#This option is the ability to see other faction members inventories
+f-inspect:
+  time-string: "/hrs ago"
 
 ############################################################
 # +------------------------------------------------------+ #
