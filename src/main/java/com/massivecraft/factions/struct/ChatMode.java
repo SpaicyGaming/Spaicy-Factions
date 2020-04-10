@@ -1,5 +1,6 @@
 package com.massivecraft.factions.struct;
 
+import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.zcore.util.TL;
 
 public enum ChatMode {
@@ -37,7 +38,7 @@ public enum ChatMode {
 
     public ChatMode getNext() {
         if (this == PUBLIC) {
-            return ALLIANCE;
+            return Conf.alliesOnlyChat ? ALLIANCE : FACTION;
         }
         if (this == ALLIANCE) {
             return FACTION;

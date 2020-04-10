@@ -221,7 +221,9 @@ public enum TL {
     COMMAND_TPBANNER_DESCRIPTION("Teleport to your faction banner"),
 
 
-    COMMAND_CHAT_DISABLED("&c&l[!] &7The built in chat channels are &cdisabled &7on this server."),
+    COMMAND_CHAT_DISABLED_ALL("&c&l[!] &7The built in chat channels are &cdisabled &7on this server."),
+    COMMAND_CHAT_DISABLED_ALLIES("&c&l[!] &dAllies only &7chat is &cdisabled &7on this server."),
+    COMMAND_CHAT_DISABLED_TRUCES("&c&l[!] &5Truce only &7chat is &cdisabled &7on this server."),
     COMMAND_CHAT_INVALIDMODE("&c&l[!] &cUnrecognised &7chat mode. Please enter either '&da&7','&af&7','&6m&7' or '&fp&7'"),
     COMMAND_CHAT_DESCRIPTION("Change chat mode"),
 

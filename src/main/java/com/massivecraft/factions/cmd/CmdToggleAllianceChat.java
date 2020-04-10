@@ -28,7 +28,12 @@ public class CmdToggleAllianceChat extends FCommand {
     @Override
     public void perform(CommandContext context) {
         if (!Conf.factionOnlyChat) {
-            context.msg(TL.COMMAND_CHAT_DISABLED.toString());
+            context.msg(TL.COMMAND_CHAT_DISABLED_ALL.toString());
+            return;
+        }
+
+        if (!Conf.alliesOnlyChat) {
+            context.msg(TL.COMMAND_CHAT_DISABLED_ALLIES.toString());
             return;
         }
 

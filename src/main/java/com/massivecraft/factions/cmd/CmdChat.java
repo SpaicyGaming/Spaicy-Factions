@@ -31,12 +31,12 @@ public class CmdChat extends FCommand {
     @Override
     public void perform(CommandContext context) {
         if (!Conf.factionOnlyChat) {
-            context.msg(TL.COMMAND_CHAT_DISABLED.toString());
+            context.msg(TL.COMMAND_CHAT_DISABLED_ALL.toString());
             return;
         }
 
         String modeString = context.argAsString(0);
-        ChatMode modeTarget = context.fPlayer.getChatMode().getNext();
+        ChatMode modeTarget;
 
         if (modeString != null) {
             modeString = modeString.toLowerCase();
@@ -49,15 +49,25 @@ public class CmdChat extends FCommand {
             } else if (modeString.startsWith("p")) {
                 modeTarget = ChatMode.PUBLIC;
             } else if (modeString.startsWith("a")) {
+                if (!Conf.alliesOnlyChat) {
+                    context.msg(TL.COMMAND_CHAT_DISABLED_ALLIES.toString());
+                    return;
+                }
                 modeTarget = ChatMode.ALLIANCE;
             } else if (modeString.startsWith("f")) {
                 modeTarget = ChatMode.FACTION;
             } else if (modeString.startsWith("t")) {
+                if (!Conf.trucesOnlyChat) {
+                    context.msg(TL.COMMAND_CHAT_DISABLED_TRUCES.toString());
+                    return;
+                }
                 modeTarget = ChatMode.TRUCE;
             } else {
                 context.msg(TL.COMMAND_CHAT_INVALIDMODE);
                 return;
             }
+        } else {
+            modeTarget = context.fPlayer.getChatMode().getNext();
         }
 
         context.fPlayer.setChatMode(modeTarget);
