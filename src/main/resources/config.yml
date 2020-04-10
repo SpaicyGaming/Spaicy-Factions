@@ -747,6 +747,16 @@ fcooldowns: #All of These Cooldowns Are In Seconds
 Falling-Block-Fix:
   enabled: true
 
+
+############################################################
+# +------------------------------------------------------+ #
+# |              Faction Inspect                         | #
+# +------------------------------------------------------+ #
+############################################################
+#This option is the ability to see other faction members inventories
+f-inspect:
+  time-string: "/hrs ago"
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                  Faction Disband                     | #

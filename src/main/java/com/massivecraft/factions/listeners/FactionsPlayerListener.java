@@ -649,7 +649,7 @@ public class FactionsPlayerListener implements Listener {
 
     private String convertTime(int time) {
         String result = String.valueOf(Math.round((System.currentTimeMillis() / 1000L - time) / 36.0D) / 100.0D);
-        return (result.length() == 3 ? result + "0" : result) + "/hrs ago";
+        return (result.length() == 3 ? result + "0" : result) + FactionsPlugin.instance.getConfig().getString("f-inspect.time-string");
     }
 
     public void startPositionCheck() {
