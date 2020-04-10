@@ -128,7 +128,7 @@ public class FactionsEntityListener implements Listener {
                 }
             } else {
                 // Protect armor stands/item frames from being damaged in protected territories
-                if (damagee.getType() == EntityType.ITEM_FRAME || damagee.getType() == EntityType.ARMOR_STAND) {
+                if (damagee.getType() == EntityType.ITEM_FRAME || (!FactionsPlugin.getInstance().mc17 && damagee.getType() == EntityType.ARMOR_STAND)) {
                     // Manage projectiles launched by players
                     if (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Entity) {
                         damager = (Entity) ((Projectile) damager).getShooter();
