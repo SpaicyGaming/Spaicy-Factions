@@ -124,7 +124,7 @@ public class Conf {
     public static boolean useDisbandGUI = true;
 
     //SEALTH
-    public static boolean useSealthSystem = true;
+    public static boolean useStealthSystem = true;
 
     //STRIKES
     public static boolean useStrikeSystem = true;
@@ -424,6 +424,8 @@ public class Conf {
     public static boolean usePermissionHints = false;
     public static HashMap<String, DefaultPermissions> defaultFactionPermissions = new HashMap<>();
     public static HashSet<PermissableAction> lockedPermissions = new HashSet<>();
+
+    public static boolean wildLoadChunkBeforeTeleport = true;
 
     private static transient Conf i = new Conf();
 
