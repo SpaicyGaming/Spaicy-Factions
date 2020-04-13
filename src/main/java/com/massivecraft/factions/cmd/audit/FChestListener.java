@@ -34,7 +34,7 @@ public class FChestListener implements Listener {
         if (!fPlayer.isInFactionsChest()) return;
         if (e.isCancelled()) return;
         e.setCancelled(true);
-        e.getWhoClicked().sendMessage(CC.RedB + "(!) " + CC.Red + "You cannot drag items while viewing a /f chest!");
+        player.sendMessage(CC.RedB + "(!) " + CC.Red + "You cannot drag items while viewing a /f chest!");
     }
 
 
