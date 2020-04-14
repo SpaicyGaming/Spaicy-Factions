@@ -62,9 +62,13 @@ public class MissionHandler implements Listener {
             return;
         }
         List<Mission> missions = fPlayer.getFaction().getMissions().values().stream().filter(mission -> mission.getType().equalsIgnoreCase("kill")).collect(Collectors.toList());
+
+        String killedEntityType = event.getEntityType().toString();
         for (Mission mission2 : missions) {
             ConfigurationSection section = plugin.getConfig().getConfigurationSection("Missions").getConfigurationSection(mission2.getName());
-            if (!event.getEntityType().toString().equals(section.getConfigurationSection("Mission").getString("EntityType"))) {
+            String missionEntityType = section.getString("Mission.EntityType");
+
+            if (!missionEntityType.equals("ALL") && !killedEntityType.equals(missionEntityType)) {
                 continue;
             }
             mission2.incrementProgress();
