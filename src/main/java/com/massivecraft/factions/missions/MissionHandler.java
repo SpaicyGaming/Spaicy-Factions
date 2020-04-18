@@ -1,9 +1,8 @@
 package com.massivecraft.factions.missions;
 
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.zcore.util.TL;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,16 +60,30 @@ public class MissionHandler implements Listener {
         if (fPlayer == null) {
             return;
         }
-        List<Mission> missions = fPlayer.getFaction().getMissions().values().stream().filter(mission -> mission.getType().equalsIgnoreCase("kill")).collect(Collectors.toList());
 
         String killedEntityType = event.getEntityType().toString();
-        for (Mission mission2 : missions) {
-            ConfigurationSection section = plugin.getConfig().getConfigurationSection("Missions").getConfigurationSection(mission2.getName());
+
+        List<Mission> activeFactionMissions = fPlayer.getFaction().getMissions().values().stream().filter(mission -> mission.getType().equalsIgnoreCase("kill")).collect(Collectors.toList());
+        for (Mission mission2 : activeFactionMissions) {
+            ConfigurationSection section = plugin.getConfig().getConfigurationSection("Missions." + mission2.getName());
             String missionEntityType = section.getString("Mission.EntityType");
 
             if (!missionEntityType.equals("ALL") && !killedEntityType.equals(missionEntityType)) {
                 continue;
             }
+
+            // count kills only if in a whitelisted world or in claim
+            List<String> worldsWhitelist = section.getStringList("Mission.WorldsWhitelist");
+            if (worldsWhitelist != null && !worldsWhitelist.isEmpty()) {
+                Location playerLocation = fPlayer.getPlayer().getLocation();
+                if (!worldsWhitelist.contains(playerLocation.getWorld().getName())) {
+                    Faction factionAtLocation = Board.getInstance().getFactionAt(new FLocation(playerLocation));
+                    if (!factionAtLocation.equals(fPlayer.getFaction())) {
+                        continue;
+                    }
+                }
+            }
+
             mission2.incrementProgress();
             checkIfDone(fPlayer, mission2, section);
         }

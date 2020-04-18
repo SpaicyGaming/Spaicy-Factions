@@ -855,6 +855,7 @@ Missions:
     Mission:
       Type: "KILL"
       EntityType: "ZOMBIE"
+      WorldsWhitelist: [farm] # kills counted only if in own claim and in a whitelisted wordl
       Amount: 1000
     Reward:
       Commands: ["f points add %faction% 100"]
