@@ -122,8 +122,13 @@ public class MissionGUI implements FactionGUI {
             if (!key.equals("FillItem")) {
                 ConfigurationSection section = configurationSection.getConfigurationSection(key);
                 int slot = section.getInt("Slot");
+                int amount = section.getInt("Amount");
 
                 ItemStack itemStack = XMaterial.matchXMaterial(section.getString("Material")).get().parseItem();
+                if (amount > 1) {
+                    itemStack.setAmount(amount);
+                }
+
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("Name")));
                 List<String> loreLines = new ArrayList<>();
