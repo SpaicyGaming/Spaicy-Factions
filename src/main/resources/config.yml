@@ -810,7 +810,11 @@ MissionGUISize: 4
 Missions-Enabled: true
 Missions-GUI-Title: '&8&lFaction Missions'
 MaximumMissionsAllowedAtOnce: 1
-Mission-Progress-Format: '&b&lProgression: &f{progress}&7/&e{total}'
+Mission-Progress-Format:
+  - ''
+  - '&b&lProgression: &f{progress}&7/&e{total}'
+  - ''
+  - '&cRight-Click to deactivate'
 Randomization:
   Enabled: false
   Start-Item:
@@ -828,6 +832,25 @@ Randomization:
     # in default configuration you will need to change the GUI size to 4 and for best results change the fillitem rows to 4 as well.
     Slot: 31
 DenyMissionsMoreThenOnce: true #this setting to true, means that if they complete a mission they cannot redo the same mission
+
+Mission-deactivate-gui:
+  title: '&7Confirm Mission Deactivation'
+  confirm-item:
+    Type: LIME_STAINED_GLASS_PANE
+    Name: '&a&lConfirm'
+    Lore:
+      - ' '
+      - '&7Confirm deactivation of &b{mission}&7!'
+  deny-item:
+    Type: RED_STAINED_GLASS_PANE
+    Name: '&c&lCancel'
+    Lore:
+      - ' '
+      - '&7Click to cancel the deactivation.'
+  separation-item:
+    Type: BLACK_WOOL
+    Name: ' '
+    Lore: []
 
 #Mission Types: KILL, MINE, PLACE, FISH, TAME, ENCHANT, CONSUME
 Missions:

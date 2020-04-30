@@ -63,8 +63,14 @@ public class MissionGUI implements FactionGUI {
         if (configurationSection == null) return;
 
         if (fPlayer.getFaction().getMissions().containsKey(missionName)) {
-            fPlayer.msg(TL.MISSION_MISSION_ACTIVE);
-            fPlayer.getPlayer().closeInventory();
+            if (action == ClickType.RIGHT || action == ClickType.SHIFT_LEFT) {
+                // deactivate mission confirm gui
+                new DeactivateMissionGUI(plugin, missionName).buildGUI(fPlayer);
+            } else {
+                // already active
+                fPlayer.msg(TL.MISSION_MISSION_ACTIVE);
+                fPlayer.getPlayer().closeInventory();
+            }
             return;
         }
 
@@ -130,10 +136,11 @@ public class MissionGUI implements FactionGUI {
                     if (!FactionsPlugin.getInstance().mc17) {
                         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     }
-                    loreLines.add("");
-                    loreLines.add(plugin.color(plugin.getConfig().getString("Mission-Progress-Format")
-                            .replace("{progress}", String.valueOf(mission.getProgress()))
-                            .replace("{total}", String.valueOf(section.getConfigurationSection("Mission").get("Amount")))));
+                    for (String progressLine : plugin.getConfig().getStringList("Mission-Progress-Format")) {
+                        loreLines.add(plugin.color(progressLine)
+                                .replace("{progress}", String.valueOf(mission.getProgress()))
+                                .replace("{total}", String.valueOf(section.getConfigurationSection("Mission").get("Amount"))));
+                    }
                 }
                 itemMeta.setLore(loreLines);
                 itemStack.setItemMeta(itemMeta);

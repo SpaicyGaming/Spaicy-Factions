@@ -1131,7 +1131,8 @@ public enum TL {
     MISSION_MISSION_ACTIVE("&c&l[!] &7This mission is currently active!"),
     MISSION_MISSION_MAX_ALLOWED("&c&l[!] &7You may not have more than &b%1$s &7missions active at once."),
     MISSION_MISSION_ALL_COMPLETED("&c&l[!] &7Your faction has completed all available missions."),
-    MISSION_MISSION_FINISHED("&c&l[!] &7Your faction has successfully completed %1$s mission!"),
+    MISSION_MISSION_FINISHED("&c&l[!] &7Your faction has successfully completed %1$s &7mission!"),
+    MISSION_MISSION_DEACTIVATED("&c&l[!] &c%1$s &7has successfully deactivated %2$s &7mission!"),
     COMMAND_MISSION_DESCRIPTION("Opens missions gui"),
     // F Global \\
 
