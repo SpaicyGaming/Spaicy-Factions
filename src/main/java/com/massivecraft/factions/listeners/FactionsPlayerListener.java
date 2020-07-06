@@ -4,7 +4,6 @@ import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.CmdFGlobal;
 import com.massivecraft.factions.cmd.CmdFly;
 import com.massivecraft.factions.cmd.CmdSeeChunk;
-import com.massivecraft.factions.cmd.FCmdRoot;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.cmd.logout.LogoutHandler;
 import com.massivecraft.factions.cmd.wild.CmdWild;
@@ -37,8 +36,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -58,9 +55,9 @@ import java.util.logging.Level;
 
 public class FactionsPlayerListener implements Listener {
 
+    public final static Map<UUID, Location> lastLocations = new HashMap<>();
     public static Set<FLocation> corners;
     public static BukkitTask positionTask = null;
-    public static Map<UUID, Location> lastLocations = new HashMap<>();
     /**
      * @author FactionsUUID Team
      */
@@ -312,7 +309,7 @@ public class FactionsPlayerListener implements Listener {
             if ((landOwned && factionToCheck.getOwnerListString(loc).contains(player.getName())) || (me.getRole() == Role.LEADER && me.getFactionId().equals(factionToCheck.getId()))) {
                 return true;
             } else if (landOwned && !factionToCheck.getOwnerListString(loc).contains(player.getName())) {
-                me.msg(TL.ACTIONS_OWNEDTERRITORYDENY, factionToCheck.getOwnerListString(loc));
+                me.msg(TL.ACTIONS_OWNEDTERRITORYDENY.toString().replace("{owners}", factionToCheck.getOwnerListString(loc)));
                 if (doPain) player.damage(Conf.actionDeniedPainAmount);
                 return false;
             } else if (!landOwned && access == Access.ALLOW) {
@@ -480,6 +477,8 @@ public class FactionsPlayerListener implements Listener {
         // Update the lastLoginTime for this fplayer
         me.setLastLoginTime(System.currentTimeMillis());
 
+        lastLocations.put(player.getUniqueId(), player.getLocation());
+
         // Store player's current FLocation and notify them where they are
         me.setLastStoodAt(new FLocation(player.getLocation()));
 
@@ -491,7 +490,7 @@ public class FactionsPlayerListener implements Listener {
 
         if (FactionsPlugin.instance.getConfig().getBoolean("scoreboard.default-enabled", false)) {
             FScoreboard.init(me);
-            FScoreboard.get(me).setDefaultSidebar(new FDefaultSidebar(), FactionsPlugin.instance.getConfig().getInt("scoreboard.default-update-interval", 20));
+            FScoreboard.get(me).setDefaultSidebar(new FDefaultSidebar());
             FScoreboard.get(me).setSidebarVisibility(me.showScoreboard());
         }
 
@@ -536,6 +535,7 @@ public class FactionsPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        Player this_ = event.getPlayer();
         FPlayer me = FPlayers.getInstance().getByPlayer(event.getPlayer());
 
         // Make sure player's power is up to date when they log off.
@@ -552,6 +552,8 @@ public class FactionsPlayerListener implements Listener {
             FactionsPlugin.instance.getTimers().remove(me.getPlayer().getUniqueId());
         }
 
+        lastLocations.remove(this_.getUniqueId());
+
         Faction myFaction = me.getFaction();
         if (!myFaction.isWilderness()) myFaction.memberLoggedOff();
 
@@ -563,7 +565,7 @@ public class FactionsPlayerListener implements Listener {
 
         CmdSeeChunk.seeChunkMap.remove(event.getPlayer().getName());
 
-        FScoreboard.remove(me);
+        FScoreboard.remove(me, event.getPlayer());
     }
 
     public String parseAllPlaceholders(String string, Faction faction, Player player) {
@@ -576,17 +578,19 @@ public class FactionsPlayerListener implements Listener {
                 .replace("{leader}", faction.getFPlayerAdmin() + "");
         return string;
     }
-    @Deprecated
+
     public void checkCanFly(FPlayer me) {
-        if (!CmdFly.fly || !CmdFly.autoenable)
+        if (!me.canFlyAtLocation() || me.checkIfNearbyEnemies()) {
+            if (me.isFlying())
+                me.setFFlying(false, false);
             return;
-        if (me.isFlying()) return;
-        if (me.getPlayer().hasPermission(Permission.FLY_FLY.node)) {
-            me.setFFlying(true, false);
-            CmdFly.flyMap.put(me, true);
-            if (CmdFly.particleTask == null)
-                CmdFly.startParticles();
         }
+        if (me.isFlying() || !FactionsPlugin.instance.getConfig().getBoolean("ffly.AutoEnable"))
+            return;
+        me.setFFlying(true, false);
+        CmdFly.flyMap.put(me.getName(), true);
+        if (CmdFly.particleTask == null)
+            CmdFly.startParticles();
     }
 
     //inspect
@@ -662,14 +666,12 @@ public class FactionsPlayerListener implements Listener {
     }
 
     public void startPositionCheck() {
-        positionTask = Bukkit.getScheduler().runTaskTimer(FactionsPlugin.instance, () -> {
-            if (Bukkit.getOnlinePlayers().size() > 0) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!lastLocations.containsKey(player.getUniqueId())) {
-                        lastLocations.put(player.getUniqueId(), player.getLocation());
-                        continue;
-                    }
-                    refreshPosition(player, lastLocations.get(player.getUniqueId()), player.getLocation());
+        positionTask = Bukkit.getScheduler().runTaskTimer(FactionsPlugin.getInstance(), () -> {
+            if (lastLocations.isEmpty()) return;
+            for (Map.Entry<UUID, Location> check : lastLocations.entrySet()) {
+                Player player = Bukkit.getPlayer(check.getKey());
+                if (player != null) {
+                    refreshPosition(player, check.getValue(), player.getLocation());
                     lastLocations.put(player.getUniqueId(), player.getLocation());
                 }
             }
@@ -735,17 +737,20 @@ public class FactionsPlayerListener implements Listener {
                     }, 5);
                 }
             }
-            if (FCmdRoot.instance.fFlyEnabled && CmdFly.autoenable && CmdFly.checkFly(me, me.getPlayer(), factionTo)) {
-                me.setFFlying(true, false);
-                if (CmdFly.particleTask == null)
-                    CmdFly.startParticles();
-            }
 
+            checkCanFly(me);
 
+            Faction at = Board.getInstance().getFactionAt(new FLocation(me.getPlayer().getLocation()));
             if (me.getAutoClaimFor() != null) {
-                me.attemptClaim(me.getAutoClaimFor(), newLocation, true);
+                if (FactionsPlugin.cachedRadiusClaim && me.attemptClaim(me.getFaction(), me.getPlayer().getLocation(), true)) {
+                    me.getFaction().getFPlayersWhereOnline(true).forEach(f -> f.msg(TL.CLAIM_CLAIMED, me.describeTo(f, true), me.getFaction().describeTo(f), at.describeTo(f)));
+                } else {
+                    me.attemptClaim(me.getAutoClaimFor(), newLocation, true);
+                }
                 FactionsPlugin.instance.logFactionEvent(me.getAutoClaimFor(), FLogType.CHUNK_CLAIMS, me.getName(), CC.GreenB + "CLAIMED", String.valueOf(1), (new FLocation(player.getLocation())).formatXAndZ(","));
-                if (Conf.disableFlightOnFactionClaimChange) CmdFly.disableFlight(me);
+                if (Conf.disableFlightOnFactionClaimChange && FactionsPlugin.getInstance().getConfig().getBoolean("enable-faction-flight"))
+                    CmdFly.disableFlight(me);
+
             } else if (me.isAutoSafeClaimEnabled()) {
                 if (!Permission.MANAGE_SAFE_ZONE.has(player)) {
                     me.setIsAutoSafeClaimEnabled(false);
@@ -867,7 +872,7 @@ public class FactionsPlayerListener implements Listener {
         Block block = event.getClickedBlock();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && block.getType() == XMaterial.GRASS_BLOCK.parseMaterial()
                 && event.hasItem() && event.getItem().getType() == XMaterial.BONE_MEAL.parseMaterial()) {
-            if (!FactionsBlockListener.playerCanBuildDestroyBlock(event.getPlayer(), block.getLocation(), PermissableAction.BUILD.name(), true)) {
+            if (!FactionsBlockListener.playerCanBuildDestroyBlock(event.getPlayer(), block.getLocation(), "build", true)) {
                 FPlayer me = FPlayers.getInstance().getById(event.getPlayer().getUniqueId().toString());
                 Faction myFaction = me.getFaction();
 

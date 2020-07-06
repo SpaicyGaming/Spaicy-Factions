@@ -105,6 +105,9 @@ public class Conf {
     public static boolean worldGuardChecking = false;
     public static boolean worldGuardBuildPriority = false;
 
+    //RADIUS CLAIMING
+    public static boolean useRadiusClaimSystem = true;
+
     //FRIENDLY FIRE
     public static boolean friendlyFireFPlayersCommand = false;
 
@@ -278,8 +281,7 @@ public class Conf {
     /// Useful for HCF features.
     /// </summary>
     public static Set<Material> territoryBypassProtectedMaterials = EnumSet.noneOf(Material.class);
-    // Dependency check
-    public static boolean dependencyCheck = true;
+
     public static boolean enableClickToClaim = true;
 
     public static Set<Material> territoryCancelAndAllowItemUseMaterial = new HashSet<>();
@@ -560,7 +562,6 @@ public class Conf {
             territoryDenyUsageMaterials.add(Material.ARMOR_STAND);
         }
 
-
         territoryProtectedMaterialsWhenOffline.add(Material.BEACON);
 
         territoryDenyUsageMaterialsWhenOffline.add(XMaterial.FIRE_CHARGE.parseMaterial());
@@ -578,7 +579,7 @@ public class Conf {
         safeZoneNerfedCreatureTypes.add(EntityType.ENDERMAN);
         safeZoneNerfedCreatureTypes.add(EntityType.GHAST);
         safeZoneNerfedCreatureTypes.add(EntityType.MAGMA_CUBE);
-        safeZoneNerfedCreatureTypes.add(EntityType.PIG_ZOMBIE);
+        if (!FactionsPlugin.getInstance().mc116) safeZoneNerfedCreatureTypes.add(EntityType.PIG_ZOMBIE);
         safeZoneNerfedCreatureTypes.add(EntityType.SILVERFISH);
         safeZoneNerfedCreatureTypes.add(EntityType.SKELETON);
         safeZoneNerfedCreatureTypes.add(EntityType.SPIDER);

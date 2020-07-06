@@ -57,6 +57,10 @@ public class CmdAdmin extends FCommand {
                 return;
             }
 
+            if (fyou.isAlt()) {
+                return;
+            }
+
             // only perform a FPlayerJoinEvent when newLeader isn't actually in the faction
             if (fyou.getFaction() != targetFaction) {
                 FPlayerJoinEvent event = new FPlayerJoinEvent(FPlayers.getInstance().getByPlayer(context.player), targetFaction, FPlayerJoinEvent.PlayerJoinReason.LEADER);
@@ -86,7 +90,7 @@ public class CmdAdmin extends FCommand {
             FactionsPlugin.instance.getFlogManager().log(targetFaction, FLogType.RANK_EDIT, context.fPlayer.getName(), fyou.getName(), ChatColor.RED + "Admin");
 
             // Inform all players
-            if(FactionsPlugin.instance.getConfig().getBoolean("faction-leader-broadcast")) {
+            if (FactionsPlugin.instance.getConfig().getBoolean("faction-leader-broadcast")) {
                 for (FPlayer fplayer : FPlayers.getInstance().getOnlinePlayers()) {
                     fplayer.msg(TL.COMMAND_ADMIN_PROMOTED, context.player == null ? TL.GENERIC_SERVERADMIN.toString() : context.fPlayer.describeTo(fplayer, true), fyou.describeTo(fplayer), targetFaction.describeTo(fplayer));
                 }

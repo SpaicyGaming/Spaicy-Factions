@@ -282,6 +282,7 @@ show:
   - '&4* &cDescription: &f{description}'
   - '&4* &cLand / Power / Max Power: &f{chunks} &8/ &f{power} &8/ &f{maxPower}'
   - '&4* &cFaction Strikes: &f{strikes}'
+  - '&4* &cShield Status: &f{shield-status}'
   - '&4* &cFaction Points: &f{faction-points}'
   - '&4* &cFounded: &f{create-date}'
   - '&4* &cBalance: &f{faction-balance}'
@@ -293,6 +294,7 @@ show:
   - '&4* &cBans: &f{faction-bancount}'
   - '&8&m----------------------------------------'
 # For a /f show that does not display fancy messages that are essentially empty, use minimal-show
+relational-show: true
 minimal-show: false
 
 # Factions that should be exempt from /f show, case sensitive, useful for a
@@ -865,7 +867,7 @@ Missions:
       - "&b&lMine &f&n10,000&r &2Sugar Cane"
     Mission:
       Type: "MINE"
-      Material: "SUGAR_CANE_BLOCK"
+      Material: "SUGAR_CANE"
       Amount: 10000
     Reward:
       Commands: ["f points add %faction% 100"]
@@ -1284,9 +1286,9 @@ fupgrades:
     Members:
       Max-Level: 3
       Members-Limit:
-        level-1: 30
-        level-2: 35
-        level-3: 40
+        level-1: 5 #The Number Of Members It Will Increase By
+        level-2: 10
+        level-3: 15
       Cost:
         level-1: 1000000
         level-2: 2000000
@@ -1300,9 +1302,9 @@ fupgrades:
           - '&7&oYour current level is &e&l&o{level}'
           - ''
           - '&c&lFaction Member Limit'
-          - '&4&l* &cLevel 1: &f30'
-          - '&4&l* &cLevel 2: &f35'
-          - '&4&l* &cLevel 3: &f40'
+          - '&4&l* &cLevel 1: &f35'
+          - '&4&l* &cLevel 2: &f40'
+          - '&4&l* &cLevel 3: &f45'
           - '&f'
           - '&c&lCosts'
           - '&4&l* &cLevel 1: &f$1,000,000'
@@ -1472,8 +1474,6 @@ Wild:
   Enabled: true
   # Time to wait in seconds #
   Wait: 5
-  # World players will be teleported to #
-  World: 'World'
   # General GUI Settings #
   GUI:
     Name: 'Teleporter'
@@ -1484,6 +1484,7 @@ Wild:
   Zones:
     # You may create your own zones here please just follow the original format #
    Close:
+     World: world
      Range:
        MinX: -200
        MaxX: 200
@@ -1498,6 +1499,7 @@ Wild:
      Name: '&cLow Range'
      Slot: 1
    Medium:
+     World: world
      Range:
        MinX: -400
        MaxX: 400
@@ -1512,6 +1514,7 @@ Wild:
      Name: '&cMedium Range'
      Slot: 4
    Far:
+     World: world
      Range:
        MinX: -800
        MaxX: 800
@@ -1591,6 +1594,7 @@ Wild:
 #  - {tnt-balance} : # of tnt a faction has in their tnt bank
 #  - {tnt-max-balance} : # of possible tnt a faction can have in their tnt bank
 #  - {faction-strikes} : # of strikes a faction has
+#  - {shield-status} : Status of the factions shield
 
 # Faction Permissions GUI variables. Can only be used in GUI
 # - {relation}            : Shows relation name (Can be used in action and relation)

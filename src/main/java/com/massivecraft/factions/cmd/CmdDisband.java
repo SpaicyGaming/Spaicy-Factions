@@ -70,7 +70,7 @@ public class CmdDisband extends FCommand {
             return;
         }
 
-        if(Cooldown.isOnCooldown(context.fPlayer.getPlayer(), "disbandCooldown") && !context.fPlayer.isAdminBypassing()){
+        if (Cooldown.isOnCooldown(context.fPlayer.getPlayer(), "disbandCooldown") && !context.fPlayer.isAdminBypassing()) {
             context.msg(TL.COMMAND_COOLDOWN);
             return;
         }
@@ -82,7 +82,7 @@ public class CmdDisband extends FCommand {
         }
 
         if (!access) {
-            if (Conf.useDisbandGUI && !context.fPlayer.isAdminBypassing() || !context.player.isOp()) {
+            if (Conf.useDisbandGUI && (!context.fPlayer.isAdminBypassing() || !context.player.isOp())) {
                 if (!disbandMap.containsKey(context.player.getUniqueId().toString())) {
                     new FDisbandFrame(FactionsPlugin.getInstance()).buildGUI(context.fPlayer);
                     return;

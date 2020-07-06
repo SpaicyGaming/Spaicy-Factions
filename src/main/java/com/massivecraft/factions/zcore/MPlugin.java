@@ -15,7 +15,6 @@ import com.massivecraft.factions.zcore.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -100,9 +99,7 @@ public abstract class MPlugin extends JavaPlugin {
             long saveTicks = (long) (20 * 60 * Conf.saveToFileEveryXMinutes); // Approximately every 30 min by default
             saveTask = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new SaveTask(this), saveTicks, saveTicks);
         }
-
         loadLang();
-
         loadSuccessful = true;
         return true;
     }
@@ -178,17 +175,18 @@ public abstract class MPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-            if (saveTask != null) {
-                this.getServer().getScheduler().cancelTask(saveTask);
-                saveTask = null;
-            }
-            // only save data if plugin actually loaded successfully
-            if (loadSuccessful) {
-                Factions.getInstance().forceSave();
-                FPlayers.getInstance().forceSave();
-                Board.getInstance().forceSave();
-            }
-            log("Disabled");
+        if (saveTask != null) {
+            this.getServer().getScheduler().cancelTask(saveTask);
+            saveTask = null;
+        }
+        // only save data if plugin actually loaded successfully
+        if (loadSuccessful) {
+            Factions.getInstance().forceSave();
+            FPlayers.getInstance().forceSave();
+            Board.getInstance().forceSave();
+        }
+
+        log("Disabled");
     }
 
     // -------------------------------------------- //

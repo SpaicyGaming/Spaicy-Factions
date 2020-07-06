@@ -663,25 +663,34 @@ public abstract class MemoryFPlayer implements FPlayer {
     public void updatePower() {
         if (this.isOffline()) {
             losePowerFromBeingOffline();
-            if (!Conf.powerRegenOffline) return;
+            if (!Conf.powerRegenOffline) {
+                return;
+            }
         } else if (hasFaction() && getFaction().isPowerFrozen()) {
             return; // Don't let power regen if faction power is frozen.
         }
 
         long now = System.currentTimeMillis();
-        this.millisPassed = now - this.lastPowerUpdateTime;
+        long millisPassed = now - this.lastPowerUpdateTime;
         this.lastPowerUpdateTime = now;
 
         Player thisPlayer = this.getPlayer();
-        if (thisPlayer != null && thisPlayer.isDead())
+        if (thisPlayer != null && thisPlayer.isDead()) {
             return;  // don't let dead players regain power until they respawn
-        PowerRegenEvent powerRegenEvent = new PowerRegenEvent(getFaction(), this);
-        Bukkit.getScheduler().runTask(FactionsPlugin.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(powerRegenEvent));
+        }
 
-        if (!powerRegenEvent.isCancelled())
-            if (!powerRegenEvent.usingCustomPower())
-                this.alterPower(millisPassed * Conf.powerPerMinute / 60000); // millisPerMinute : 60 * 1000
-            else this.alterPower(+powerRegenEvent.getCustomPower());
+        double delta = millisPassed * Conf.powerPerMinute / 60000; // millisPerMinute : 60 * 1000
+        if (Bukkit.getPluginManager().getPlugin("FactionsPlugin") != null) {
+            Bukkit.getScheduler().runTask(FactionsPlugin.getInstance(), () -> {
+                PowerRegenEvent powerRegenEvent = new PowerRegenEvent(getFaction(), this, delta);
+                Bukkit.getServer().getPluginManager().callEvent(powerRegenEvent);
+                if (!powerRegenEvent.isCancelled()) {
+                    this.alterPower(powerRegenEvent.getDelta());
+                }
+            });
+        } else {
+            this.alterPower(delta);
+        }
     }
 
     public void losePowerFromBeingOffline() {
@@ -729,7 +738,7 @@ public abstract class MemoryFPlayer implements FPlayer {
     public void sendFactionHereMessage(Faction from) {
         Faction toShow = Board.getInstance().getFactionAt(getLastStoodAt());
 
-        if(Conf.worldsNoClaiming.contains(getLastStoodAt().getWorldName())) return;
+        if (Conf.worldsNoClaiming.contains(getLastStoodAt().getWorldName())) return;
 
         if (showInfoBoard(toShow)) {
             FScoreboard.get(this).setTemporarySidebar(new FInfoSidebar(toShow));
@@ -851,7 +860,7 @@ public abstract class MemoryFPlayer implements FPlayer {
         int factionBuffer = plugin.getConfig().getInt("hcf.buffer-zone", 0);
         int worldBuffer = plugin.getConfig().getInt("world-border.buffer", 0) - 1;
 
-        if (Conf.worldGuardChecking &&  Worldguard.getInstance().checkForRegionsInChunk(flocation)) {
+        if (Conf.worldGuardChecking && Worldguard.getInstance().checkForRegionsInChunk(flocation)) {
             // Checks for WorldGuard regions in the chunk attempting to be claimed
             error = plugin.txt.parse(TL.CLAIM_PROTECTED.toString());
         } else if (flocation.isOutsideWorldBorder(plugin.getConfig().getInt("world-border.buffer", 0) - 1)) {
@@ -864,7 +873,7 @@ public abstract class MemoryFPlayer implements FPlayer {
             return true;
         } else if (forFaction.isWarZone() && Permission.MANAGE_WAR_ZONE.has(getPlayer())) {
             return true;
-        } else if (currentFaction.getAccess(this, PermissableAction.TERRITORY) == Access.ALLOW && forFaction != currentFaction ) {
+        } else if (currentFaction.getAccess(this, PermissableAction.TERRITORY) == Access.ALLOW && forFaction != currentFaction) {
             return true;
         } else if (myFaction != forFaction) {
             error = plugin.txt.parse(TL.CLAIM_CANTCLAIM.toString(), forFaction.describeTo(this));
@@ -963,37 +972,38 @@ public abstract class MemoryFPlayer implements FPlayer {
     }
 
     public void setFFlying(boolean fly, boolean damage) {
-        Player player = getPlayer();
-        assert player != null;
+        if (FactionsPlugin.getInstance().getConfig().getBoolean("enable-faction-flight")) {
+            Player player = getPlayer();
+            if (player == null) return;
 
-        player.setAllowFlight(fly);
-        player.setFlying(fly);
+            player.setAllowFlight(fly);
+            player.setFlying(fly);
 
-        if (!damage) {
-            msg(TL.COMMAND_FLY_CHANGE, fly ? "enabled" : "disabled");
-            if (!fly) {
-                sendMessage(TL.COMMAND_FLY_COOLDOWN.toString().replace("{amount}", FactionsPlugin.getInstance().getConfig().getInt("fly-falldamage-cooldown", 3) + ""));
+            if (!damage) {
+                msg(TL.COMMAND_FLY_CHANGE, fly ? "enabled" : "disabled");
+                if (!fly) {
+                    sendMessage(TL.COMMAND_FLY_COOLDOWN.toString().replace("{amount}", FactionsPlugin.getInstance().getConfig().getInt("fly-falldamage-cooldown", 3) + ""));
+                }
             } else {
-                CmdFly.flyMap.put(this, true);
+                msg(TL.COMMAND_FLY_DAMAGE);
             }
-        } else {
-            msg(TL.COMMAND_FLY_DAMAGE);
-        }
 
-        // If leaving fly mode, don't let them take fall damage for x seconds.
-        if (!fly) {
-            int cooldown = FactionsPlugin.getInstance().getConfig().getInt("fly-falldamage-cooldown", 3);
-            CmdFly.flyMap.remove(this);
+            // If leaving fly mode, don't let them take fall damage for x seconds.
+            if (!fly) {
+                int cooldown = FactionsPlugin.getInstance().getConfig().getInt("fly-falldamage-cooldown", 3);
+                CmdFly.flyMap.remove(player.getName());
 
-            // If the value is 0 or lower, make them take fall damage.
-            // Otherwise, start a timer and have this cancel after a few seconds.
-            // Short task so we're just doing it in method. Not clean but eh.
-            if (cooldown > 0) {
-                setTakeFallDamage(false);
-                Bukkit.getScheduler().runTaskLater(FactionsPlugin.getInstance(), () -> setTakeFallDamage(true), 20L * cooldown);
+                // If the value is 0 or lower, make them take fall damage.
+                // Otherwise, start a timer and have this cancel after a few seconds.
+                // Short task so we're just doing it in method. Not clean but eh.
+                if (cooldown > 0) {
+                    setTakeFallDamage(false);
+                    Bukkit.getScheduler().runTaskLater(FactionsPlugin.getInstance(), () -> setTakeFallDamage(true), 20L * cooldown);
+                }
             }
+
+            isFlying = fly;
         }
-        isFlying = fly;
     }
 
     public boolean isInFactionsChest() {
@@ -1018,8 +1028,14 @@ public abstract class MemoryFPlayer implements FPlayer {
 
     public boolean canFlyAtLocation(FLocation location) {
         Faction faction = Board.getInstance().getFactionAt(location);
-        if ((faction == getFaction() && getRole() == Role.LEADER) || isAdminBypassing) return true;
-        if (faction.isSystemFaction()) return CmdFly.checkFly(this, getPlayer(), faction);
+        if ((faction == getFaction() && getRole() == Role.LEADER) || isAdminBypassing) {
+            return true;
+        }
+
+        if (faction.isSystemFaction()) {
+            return CmdFly.checkBypassPerms(this, getPlayer(), faction, false);
+        }
+
         Access access = faction.getAccess(this, PermissableAction.FLY);
         return access == null || access == Access.UNDEFINED || access == Access.ALLOW;
     }
@@ -1206,11 +1222,11 @@ public abstract class MemoryFPlayer implements FPlayer {
     }
 
 
-    public boolean hasFriendlyFire(){
+    public boolean hasFriendlyFire() {
         return friendlyFire;
     }
 
-    public void setFriendlyFire(boolean status){
+    public void setFriendlyFire(boolean status) {
         friendlyFire = status;
     }
 
@@ -1288,11 +1304,13 @@ public abstract class MemoryFPlayer implements FPlayer {
 
 
         // announce success
-        Set<FPlayer> informTheseFPlayers = new HashSet<>();
-        informTheseFPlayers.add(this);
-        informTheseFPlayers.addAll(forFaction.getFPlayersWhereOnline(true));
-        for (FPlayer fp : informTheseFPlayers) {
-            fp.msg(TL.CLAIM_CLAIMED, this.describeTo(fp, true), forFaction.describeTo(fp), currentFaction.describeTo(fp));
+        if (!FactionsPlugin.cachedRadiusClaim) {
+            Set<FPlayer> informTheseFPlayers = new HashSet<>();
+            informTheseFPlayers.add(this);
+            informTheseFPlayers.addAll(forFaction.getFPlayersWhereOnline(true));
+            for (FPlayer fp : informTheseFPlayers) {
+                fp.msg(TL.CLAIM_CLAIMED, this.describeTo(fp, true), forFaction.describeTo(fp), currentFaction.describeTo(fp));
+            }
         }
 
         Board.getInstance().setFactionAt(forFaction, flocation);

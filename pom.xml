@@ -4,7 +4,7 @@
 
     <groupId>com.massivecraft</groupId>
     <artifactId>Factions</artifactId>
-    <version>1.6.9.5-2.3.6-RC</version>
+    <version>1.6.9.5-2.4.1-RC</version>
     <packaging>jar</packaging>
 
     <name>SaberFactions</name>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.5.8</version>
+            <version>0.5.19</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
